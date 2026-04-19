@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="PRISM-SLAM: Probabilistic Ray-Grounded Inference for Scale-aware Metric SLAM" />
+    <meta name="keywords" content="SLAM, monocular, metric scale, depth estimation, factor graph, Bayesian" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PRISM-SLAM: Probabilistic Ray-Grounded Inference for Scale-aware Metric SLAM</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+    <style>
+      .results-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      .results-table th, .results-table td { padding: 6px 10px; text-align: center; border-bottom: 1px solid #ddd; }
+      .results-table th { background: #f5f5f5; font-weight: 600; }
+      .results-table tr:hover { background: #fafafa; }
+      .highlight-row { background: #f0f7ff !important; font-weight: 600; }
+      .highlight-row:hover { background: #e8f0fe !important; }
+      .metric-badge { display: inline-block; background: #48c774; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; vertical-align: middle; font-weight: 600; }
+      .no-metric { display: inline-block; background: #ccc; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; vertical-align: middle; }
+      .contrib-box { background: #f9f9f9; border-left: 4px solid #3273dc; padding: 1rem 1.2rem; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+      .contrib-box strong { color: #3273dc; }
+      .section-divider { border: none; border-top: 2px solid #eee; margin: 0; }
+      .tag-soon { background: #ffdd57; color: #333; font-size: 0.75rem; padding: 2px 8px; border-radius: 3px; font-weight: 600; }
+    </style>
+  </head>
+
+  <body>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-body" style="padding-bottom: 1rem;">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-2 publication-title" style="margin-bottom: 0.8rem;">
+                PRISM-SLAM: Probabilistic Ray-Grounded Inference<br>for Scale-aware Metric SLAM
+              </h1>
+
+              <div class="is-size-5 publication-authors" style="margin-bottom: 0.3rem;">
+                <span class="author-block">Anonymous Authors</span>
+              </div>
+              <div class="is-size-6 has-text-centered" style="color: #666;">
+                <em>Under Review at ICML 2026</em>
+              </div>
+
+              <!-- Buttons -->
+              <div class="column has-text-centered" style="margin-top: 1rem; padding-bottom: 0;">
+                <div class="buttons is-centered">
+                  <a href="./static/paper.pdf" class="button is-dark is-rounded" target="_blank">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                  <span class="button is-rounded is-static" style="opacity: 0.6; cursor: default;">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code <span class="tag-soon">Soon</span></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Claim -->
+    <section style="background: #f0f7ff; padding: 1rem 0;">
+      <div class="container is-max-desktop has-text-centered">
+        <p class="is-size-5" style="font-weight: 500;">
+          The <strong>first monocular SLAM</strong> to output <strong>verified metric trajectories</strong> at runtime &mdash;
+          SE3 ATE = Sim3 ATE on TUM fr1/xyz (2.9 cm, 3.3% scale error) &mdash; at <strong>17 FPS</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Abstract -->
+    <section class="section" style="padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3 has-text-centered">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Monocular SLAM historically suffers from unobservable absolute scale due to the scale ambiguity inherent in pinhole projective geometry, often exacerbated by severe tracking degradation in dynamic environments.
+                We propose <strong>PRISM-SLAM</strong>, a real-time metric SLAM pipeline that rigorously integrates foundation model priors into a Bayesian probabilistic factor graph.
+                We transform metric depth representations into a novel <em>Pl&uuml;cker Ray-Distance Factor</em>, mathematically resolving the scale ambiguity.
+                Furthermore, we map predictive uncertainty directly into a <em>Dynamic Scene Uncertainty Gating (DSUG) Bayesian information matrix</em>, probabilistically down-weighting dynamic distractors without requiring explicit semantic segmentation.
+                On TUM RGB-D, PRISM-SLAM achieves SE3 ATE equal to Sim3 ATE (2.9 cm, 3.3% scale error) on fr1/xyz &mdash; demonstrating, for the first time, that a monocular SLAM system can produce deployment-ready metric trajectories without post-hoc oracle alignment.
+                Operating at 17 FPS (34&times; faster than WildGS-SLAM), PRISM-SLAM provides verified metric output for robotics and embodied AI using only monocular RGB input.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Pipeline -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">System Architecture</h3>
+        <div class="has-text-centered" style="margin-bottom: 1rem;">
+          <figure class="image">
+            <img src="./static/images/f2_pipeline.png" alt="PRISM-SLAM Pipeline" style="max-width: 900px; margin: 0 auto;" />
+          </figure>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            PRISM-SLAM uses a four-process asynchronous architecture.
+            A high-speed C++ ORB tracker (~17 Hz, CPU) submits keyframes to an asynchronous DA3 GPU worker.
+            The Metric Optimizer fuses DA3 depth with ORB map points via log-domain WLS and an Adaptive Kalman Filter,
+            then injects depth constraints and applies refined scale back to the tracker.
+            The DSUG-Gated Dense Map performs deterministic back-projection, filtering dynamic artifacts using the Bayesian DSUG gate.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Key Contributions -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">Key Contributions</h3>
+        <div class="columns is-multiline" style="margin-top: 0.5rem;">
+          <div class="column is-half">
+            <div class="contrib-box">
+              <strong>N1 &middot; Pl&uuml;cker Ray-Distance Factor</strong><br>
+              Replaces 2D reprojection with a 3D ray-to-point orthogonal distance in Pl&uuml;cker coordinates.
+              Makes the global scale <em>Fisher-identifiable</em>, eliminating the monocular scale null-space.
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="contrib-box">
+              <strong>N2 &middot; DSUG Bayesian Information Matrix</strong><br>
+              Maps DA3's predictive uncertainty directly to the information matrix &Omega;.
+              Dynamic pixels are probabilistically down-weighted &mdash; no binary masks, no gradient discontinuities.
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="contrib-box">
+              <strong>N3 &middot; Bhattacharyya Loop Closure</strong><br>
+              Treats landmarks as 3D Gaussians and enforces covariance-ellipsoid alignment via the Bhattacharyya coefficient,
+              reducing map deformation beyond mean-position matching.
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="contrib-box">
+              <strong>N5 &middot; Log-Domain Heteroscedastic Kalman Filter</strong><br>
+              Models multiplicative scale noise additively in log-space with heteroscedastic measurement noise from WLS,
+              bridging the asynchronous latency between the fast tracker and heavy GPU inference.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- DSUG Figure -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">DSUG: Bayesian Information Matrix vs. Binary Masking</h3>
+        <div class="has-text-centered">
+          <figure class="image">
+            <img src="./static/images/f1_dsug.png" alt="DSUG Bayesian Information Matrix" style="max-width: 900px; margin: 0 auto;" />
+          </figure>
+          <figcaption class="has-text-centered is-size-7" style="margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <strong>(a)</strong> Input RGB. <strong>(b)</strong> GT depth. <strong>(c)</strong> Temporal CoV of DA3 depth (DSUG uncertainty proxy).
+            <strong>(d)</strong> DSUG soft weight: gracefully down-weights 15.1% of dynamic pixels.
+            <strong>(e)</strong> Binary mask: aggressively excludes 45% of the frame, removing valid static regions.
+          </figcaption>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Metric Scale Survey -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">No Prior Monocular SLAM Verifies Metric Scale</h3>
+        <div class="content has-text-centered" style="margin-bottom: 1rem;">
+          <p>Despite integrating metric depth models, <em>no</em> existing monocular SLAM reports SE3 ATE or verifies metric trajectory output. All rely on post-hoc Sim3 alignment unavailable at deployment.</p>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="results-table" style="max-width: 700px; margin: 0 auto;">
+            <thead>
+              <tr><th>Method</th><th>Depth Prior</th><th>Eval</th><th>Metric?</th><th>FPS</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ORB-SLAM3</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>30</td></tr>
+              <tr><td>DROID-SLAM</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>5</td></tr>
+              <tr><td>MonoGS</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>3</td></tr>
+              <tr><td>MASt3R-SLAM</td><td>MASt3R</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>15</td></tr>
+              <tr><td>VGGT-SLAM</td><td>VGGT</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>&mdash;</td></tr>
+              <tr><td>WildGS-SLAM</td><td>Metric3D v2</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>0.5</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>DA3</strong></td><td><strong>SE3</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>17</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Results -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">Experimental Results</h3>
+
+        <!-- TUM fr1 -->
+        <h4 class="title is-5" style="margin-top: 1.5rem;">TUM RGB-D &mdash; Static Sequences (fr1)</h4>
+        <div style="overflow-x: auto;">
+          <table class="results-table">
+            <thead>
+              <tr><th>Method</th><th>FPS</th><th>Metric</th><th colspan="2">fr1/xyz</th><th colspan="2">fr1/rpy</th></tr>
+              <tr><th></th><th></th><th></th><th>Sim3</th><th>SE3</th><th>Sim3</th><th>SE3</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ORB-SLAM3</td><td>30</td><td><span class="no-metric">&times;</span></td><td>0.9</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+              <tr><td>DROID-SLAM</td><td>5</td><td><span class="no-metric">&times;</span></td><td>1.2</td><td>&mdash;</td><td>2.6</td><td>&mdash;</td></tr>
+              <tr><td>GO-SLAM</td><td>20</td><td><span class="no-metric">&times;</span></td><td>1.0</td><td>&mdash;</td><td>1.9</td><td>&mdash;</td></tr>
+              <tr><td>MASt3R-SLAM</td><td>1</td><td><span class="no-metric">&times;</span></td><td>0.9</td><td>&mdash;</td><td>2.7</td><td>&mdash;</td></tr>
+              <tr><td>VGGT-SLAM</td><td>0.5</td><td><span class="no-metric">&times;</span></td><td>1.4</td><td>&mdash;</td><td>3.0</td><td>&mdash;</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>17</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>2.9</strong></td><td><strong>2.9</strong></td><td>4.9</td><td>4.9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
+          ATE RMSE (cm). SE3 uses runtime metric scale (no oracle Sim3 correction). Scale error: fr1/xyz 3.3%, fr1/rpy 11.9%.
+        </p>
+
+        <!-- TUM fr3 -->
+        <h4 class="title is-5" style="margin-top: 2rem;">TUM RGB-D &mdash; Dynamic Sequences (fr3)</h4>
+        <div style="overflow-x: auto;">
+          <table class="results-table">
+            <thead>
+              <tr><th>Method</th><th>Metric</th><th>sit-static</th><th>walk-static</th><th>sit-xyz</th><th>walk-xyz</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ORB-SLAM3</td><td><span class="no-metric">&times;</span></td><td>0.7</td><td>0.9</td><td>25.3</td><td>48.8</td></tr>
+              <tr><td>DROID-SLAM</td><td><span class="no-metric">&times;</span></td><td>0.4</td><td>0.3</td><td>17.6</td><td>21.4</td></tr>
+              <tr><td>MonoGS</td><td><span class="no-metric">&times;</span></td><td>1.1</td><td>3.6</td><td>16.2</td><td>18.9</td></tr>
+              <tr><td>WildGS-SLAM</td><td><span class="no-metric">&times;</span></td><td>0.5</td><td>0.6</td><td><strong>4.1</strong></td><td><strong>5.2</strong></td></tr>
+              <tr class="highlight-row"><td><strong>PRISM Sim3</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>1.6</td><td>1.9</td><td>12.7</td><td>23.2</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM SE3</strong></td><td><strong>1.8</strong></td><td><strong>2.7</strong></td><td>20.0</td><td>26.8</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
+          ATE RMSE (cm), 600 frames. WildGS uses Metric3D v2 but reports only Sim3-aligned ATE (0.5 FPS, GPU-only).
+        </p>
+
+        <!-- 7-Scenes -->
+        <h4 class="title is-5" style="margin-top: 2rem;">7-Scenes Indoor Localisation</h4>
+        <div style="overflow-x: auto;">
+          <table class="results-table">
+            <thead>
+              <tr><th>Method</th><th>Metric</th><th>Chess</th><th>Fire</th><th>Heads</th><th>Office</th><th>Pumpkin</th><th>Redkit.</th><th>Stairs</th><th>Mean</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ORB-SLAM3</td><td><span class="no-metric">&times;</span></td><td>2.1</td><td>2.4</td><td>1.2</td><td>3.5</td><td>4.8</td><td>5.1</td><td>8.9</td><td>4.0</td></tr>
+              <tr><td>DROID-SLAM</td><td><span class="no-metric">&times;</span></td><td>1.8</td><td>2.1</td><td>1.3</td><td>2.7</td><td>3.4</td><td>4.2</td><td>12.5</td><td>4.0</td></tr>
+              <tr><td>VGGT-SLAM</td><td><span class="no-metric">&times;</span></td><td>4.1</td><td>3.9</td><td>2.8</td><td>5.5</td><td>7.2</td><td>8.4</td><td>15.2</td><td>6.7</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM Sim3</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>7.1</td><td>10.8</td><td>8.8</td><td>11.7</td><td>7.9</td><td>3.6</td><td>11.5</td><td>8.8</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM SE3</strong></td><td><strong>7.1</strong></td><td>17.7</td><td style="color:#aaa;">68.4</td><td>15.5</td><td><strong>7.9</strong></td><td>12.1</td><td><strong>11.9</strong></td><td><strong>12.0</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
+          ATE RMSE (cm), 400 frames. Scale errors: chess 0.8%, pumpkin 0.7%, stairs 5.0%, office 15.8%, redkitchen 15.5%, fire 19.4%.
+          Heads is degenerate (near-zero baselines); excluded from mean. Mean over 6 non-degenerate scenes.
+        </p>
+
+        <!-- BONN -->
+        <h4 class="title is-5" style="margin-top: 2rem;">BONN Dynamic &mdash; Monocular RGB vs. RGB-D Baselines</h4>
+        <div style="overflow-x: auto;">
+          <table class="results-table" style="max-width: 650px; margin: 0 auto;">
+            <thead>
+              <tr><th>Method</th><th>Sensor</th><th>balloon</th><th>balloon2</th><th>person_trk</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ORB-SLAM3</td><td>RGB-D</td><td>5.8</td><td>17.7</td><td>70.7</td></tr>
+              <tr><td>ReFusion</td><td>RGB-D</td><td>17.5</td><td>25.4</td><td>&mdash;</td></tr>
+              <tr><td>DynaSLAM</td><td>RGB-D</td><td>3.0</td><td>2.9</td><td>&mdash;</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM SE3 (ours)</strong></td><td><strong>Mono RGB</strong></td><td><strong>18.1</strong></td><td><strong>17.7</strong></td><td><strong>39.5</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
+          ATE RMSE (cm). All baselines use depth sensors; PRISM uses monocular RGB only with runtime metric scale.
+        </p>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Loop Closure -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">Loop Closure with DA3 ViT Descriptors</h3>
+        <div class="has-text-centered">
+          <figure class="image">
+            <img src="./static/images/f3_loopclosure.png" alt="Loop Closure Results" style="max-width: 850px; margin: 0 auto;" />
+          </figure>
+          <figcaption class="has-text-centered is-size-7" style="margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            Loop closure on TUM fr1/xyz (600 frames). Without LC, drift accumulates to 4.8 cm ATE;
+            with Bhattacharyya LC and DA3 CLS descriptor retrieval, ATE improves to 2.9 cm (&minus;40%)
+            via 30 verified loops with <strong>zero false positives</strong> (100% precision).
+          </figcaption>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Dense Map -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">DSUG-Gated Dense Metric Reconstruction</h3>
+        <div class="columns is-centered" style="margin-top: 0.5rem;">
+          <div class="column is-half has-text-centered">
+            <figure class="image">
+              <img src="./static/images/f4_map.png" alt="Dense Map 1" style="max-width: 100%;" />
+            </figure>
+          </div>
+          <div class="column is-half has-text-centered">
+            <figure class="image">
+              <img src="./static/images/f5_map.png" alt="Dense Map 2" style="max-width: 100%;" />
+            </figure>
+          </div>
+        </div>
+        <p class="has-text-centered is-size-7" style="color: #888;">
+          Dense metric point clouds generated by DSUG-gated back-projection. Dynamic objects are automatically filtered
+          by the same uncertainty gate used for tracking, producing clean reconstructions without semantic segmentation.
+        </p>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Ablation -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">Ablation Study</h3>
+        <div style="overflow-x: auto;">
+          <table class="results-table" style="max-width: 650px; margin: 0 auto;">
+            <thead>
+              <tr><th>Configuration</th><th>sit-st</th><th>walk-st</th><th>fr1/xyz</th><th>Mean (&Delta;)</th></tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row"><td>Full system (ours)</td><td><strong>1.35</strong></td><td><strong>1.44</strong></td><td><strong>4.52</strong></td><td><strong>2.44</strong></td></tr>
+              <tr><td>A2: Ray &rarr; reproj (N1 off)</td><td>2.20</td><td>2.37</td><td>5.41</td><td>3.33 (+0.89)</td></tr>
+              <tr><td>A1: Binary mask (N2 off)</td><td>1.58</td><td>1.61</td><td>4.80</td><td>2.66 (+0.22)</td></tr>
+              <tr><td>A5: Linear-s Kalman (N5 off)</td><td>1.49</td><td>1.62</td><td>4.70</td><td>2.60 (+0.16)</td></tr>
+              <tr><td>A4: Median scale (WLS off)</td><td>1.42</td><td>1.57</td><td>4.65</td><td>2.55 (+0.11)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
+          ATE RMSE (cm). The Pl&uuml;cker ray factor (N1) is the single largest contributor (+0.89 cm when removed).
+        </p>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- BibTeX -->
+    <section class="section" style="padding-top: 1.5rem; padding-bottom: 2rem;">
+      <div class="container is-max-desktop">
+        <h3 class="title is-3 has-text-centered">BibTeX</h3>
+        <div class="content">
+          <pre style="background: #f5f5f5; padding: 1rem; border-radius: 6px; font-size: 0.85rem;"><code>@article{prism-slam2026,
+  title={PRISM-SLAM: Probabilistic Ray-Grounded Inference for Scale-aware Metric SLAM},
+  author={Anonymous},
+  journal={Under review},
+  year={2026}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
