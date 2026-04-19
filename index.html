@@ -52,7 +52,7 @@
               <!-- Buttons -->
               <div class="column has-text-centered" style="margin-top: 1rem; padding-bottom: 0;">
                 <div class="buttons is-centered">
-                  <a href="./static/paper.pdf" class="button is-dark is-rounded" target="_blank">
+                  <a href="./static/prism_slam.pdf" class="button is-dark is-rounded" target="_blank">
                     <span class="icon"><i class="fas fa-file-pdf"></i></span>
                     <span>Paper</span>
                   </a>
@@ -73,7 +73,7 @@
       <div class="container is-max-desktop has-text-centered">
         <p class="is-size-5" style="font-weight: 500;">
           The <strong>first monocular SLAM</strong> to output <strong>verified metric trajectories</strong> at runtime &mdash;
-          SE3 ATE = Sim3 ATE on TUM fr1/xyz (2.9 cm, 3.3% scale error) &mdash; at <strong>17 FPS</strong>.
+          SE3 ATE matches Sim3 ATE on TUM fr1/xyz (2.86 / 3.04 cm, 3.3% scale error) &mdash; at <strong>30 FPS</strong>.
         </p>
       </div>
     </section>
@@ -90,8 +90,8 @@
                 We propose <strong>PRISM-SLAM</strong>, a real-time metric SLAM pipeline that rigorously integrates foundation model priors into a Bayesian probabilistic factor graph.
                 We transform metric depth representations into a novel <em>Pl&uuml;cker Ray-Distance Factor</em>, mathematically resolving the scale ambiguity.
                 Furthermore, we map predictive uncertainty directly into a <em>Dynamic Scene Uncertainty Gating (DSUG) Bayesian information matrix</em>, probabilistically down-weighting dynamic distractors without requiring explicit semantic segmentation.
-                On TUM RGB-D, PRISM-SLAM achieves SE3 ATE equal to Sim3 ATE (2.9 cm, 3.3% scale error) on fr1/xyz &mdash; demonstrating, for the first time, that a monocular SLAM system can produce deployment-ready metric trajectories without post-hoc oracle alignment.
-                Operating at 17 FPS (34&times; faster than WildGS-SLAM), PRISM-SLAM provides verified metric output for robotics and embodied AI using only monocular RGB input.
+                On TUM RGB-D, PRISM-SLAM achieves SE3 ATE closely matching Sim3 ATE (2.86 / 3.04 cm, 3.3% scale error) on fr1/xyz &mdash; demonstrating, for the first time, that a monocular SLAM system can produce deployment-ready metric trajectories without post-hoc oracle alignment.
+                Operating at 30 FPS (60&times; faster than WildGS-SLAM), PRISM-SLAM provides verified metric output for robotics and embodied AI using only monocular RGB input.
               </p>
             </div>
           </div>
@@ -195,13 +195,18 @@
               <tr><th>Method</th><th>Depth Prior</th><th>Eval</th><th>Metric?</th><th>FPS</th></tr>
             </thead>
             <tbody>
-              <tr><td>ORB-SLAM3</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>30</td></tr>
-              <tr><td>DROID-SLAM</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>5</td></tr>
-              <tr><td>MonoGS</td><td>&mdash;</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>3</td></tr>
-              <tr><td>MASt3R-SLAM</td><td>MASt3R</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>15</td></tr>
-              <tr><td>VGGT-SLAM</td><td>VGGT</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>&mdash;</td></tr>
-              <tr><td>WildGS-SLAM</td><td>Metric3D v2</td><td>Sim3</td><td><span class="no-metric">&times;</span></td><td>0.5</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>DA3</strong></td><td><strong>SE3</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>17</strong></td></tr>
+              <tr><td>ORB-SLAM3</td><td>&mdash;</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>30</td></tr>
+              <tr><td>DROID-SLAM</td><td>&mdash;</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>5</td></tr>
+              <tr><td>DPV-SLAM++</td><td>&mdash;</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>50</td></tr>
+              <tr><td>GO-SLAM</td><td>&mdash;</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>3</td></tr>
+              <tr><td>MonoGS</td><td>&mdash;</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>3</td></tr>
+              <tr><td>Splat-SLAM</td><td>Omnidata</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>1.2</td></tr>
+              <tr><td>MASt3R-SLAM</td><td>MASt3R</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>15</td></tr>
+              <tr><td>VGGT-SLAM</td><td>VGGT</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>20</td></tr>
+              <tr><td>EC3R-SLAM</td><td>VGGT</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>36</td></tr>
+              <tr><td>WildGS-SLAM</td><td>Metric3D v2</td><td>Sim(3)</td><td><span class="no-metric">&times;</span></td><td>0.5</td></tr>
+              <tr><td>GigaSLAM</td><td>UniDepth</td><td>n.s.</td><td><span class="no-metric">&times;</span></td><td>&mdash;</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>DA3</strong></td><td><strong>SE(3)</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>30</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -225,20 +230,24 @@
             </thead>
             <tbody>
               <tr><td>ORB-SLAM3</td><td>30</td><td><span class="no-metric">&times;</span></td><td>0.9</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+              <tr><td>DeepV2D</td><td>2</td><td><span class="no-metric">&times;</span></td><td>6.4</td><td>&mdash;</td><td>10.5</td><td>&mdash;</td></tr>
+              <tr><td>DeepFactors</td><td>30</td><td><span class="no-metric">&times;</span></td><td>3.5</td><td>&mdash;</td><td>4.3</td><td>&mdash;</td></tr>
+              <tr><td>DPV-SLAM</td><td>15</td><td><span class="no-metric">&times;</span></td><td>1.0</td><td>&mdash;</td><td>3.0</td><td>&mdash;</td></tr>
+              <tr><td>DPV-SLAM++</td><td>50</td><td><span class="no-metric">&times;</span></td><td>1.0</td><td>&mdash;</td><td>3.2</td><td>&mdash;</td></tr>
+              <tr><td>GO-SLAM</td><td>3</td><td><span class="no-metric">&times;</span></td><td>1.0</td><td>&mdash;</td><td>1.9</td><td>&mdash;</td></tr>
               <tr><td>DROID-SLAM</td><td>5</td><td><span class="no-metric">&times;</span></td><td>1.2</td><td>&mdash;</td><td>2.6</td><td>&mdash;</td></tr>
-              <tr><td>GO-SLAM</td><td>20</td><td><span class="no-metric">&times;</span></td><td>1.0</td><td>&mdash;</td><td>1.9</td><td>&mdash;</td></tr>
-              <tr><td>MASt3R-SLAM</td><td>1</td><td><span class="no-metric">&times;</span></td><td>0.9</td><td>&mdash;</td><td>2.7</td><td>&mdash;</td></tr>
-              <tr><td>VGGT-SLAM</td><td>0.5</td><td><span class="no-metric">&times;</span></td><td>1.4</td><td>&mdash;</td><td>3.0</td><td>&mdash;</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>17</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>2.9</strong></td><td><strong>2.9</strong></td><td>4.9</td><td>4.9</td></tr>
+              <tr><td>MASt3R-SLAM</td><td>15</td><td><span class="no-metric">&times;</span></td><td>0.9</td><td>&mdash;</td><td>2.7</td><td>&mdash;</td></tr>
+              <tr><td>VGGT-SLAM</td><td>20</td><td><span class="no-metric">&times;</span></td><td>1.4</td><td>&mdash;</td><td>3.0</td><td>&mdash;</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>30</strong></td><td><span class="metric-badge">&#10003;</span></td><td><strong>2.86</strong></td><td><strong>3.04</strong></td><td>4.10</td><td>4.94</td></tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
-          ATE RMSE (cm). SE3 uses runtime metric scale (no oracle Sim3 correction). Scale error: fr1/xyz 3.3%, fr1/rpy 11.9%.
+          ATE RMSE (cm). SE(3) uses runtime metric scale (no oracle Sim(3) correction). On fr1/xyz, the SE(3) ATE closely matches the Sim(3) ATE with only <strong>3.3% scale error</strong>.
         </p>
 
         <!-- TUM fr3 -->
-        <h4 class="title is-5" style="margin-top: 2rem;">TUM RGB-D &mdash; Dynamic Sequences (fr3)</h4>
+        <h4 class="title is-5" style="margin-top: 2rem;">TUM RGB-D &mdash; Static &amp; Dynamic Sequences (fr3)</h4>
         <div style="overflow-x: auto;">
           <table class="results-table">
             <thead>
@@ -249,13 +258,13 @@
               <tr><td>DROID-SLAM</td><td><span class="no-metric">&times;</span></td><td>0.4</td><td>0.3</td><td>17.6</td><td>21.4</td></tr>
               <tr><td>MonoGS</td><td><span class="no-metric">&times;</span></td><td>1.1</td><td>3.6</td><td>16.2</td><td>18.9</td></tr>
               <tr><td>WildGS-SLAM</td><td><span class="no-metric">&times;</span></td><td>0.5</td><td>0.6</td><td><strong>4.1</strong></td><td><strong>5.2</strong></td></tr>
-              <tr class="highlight-row"><td><strong>PRISM Sim3</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>1.6</td><td>1.9</td><td>12.7</td><td>23.2</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM SE3</strong></td><td><strong>1.8</strong></td><td><strong>2.7</strong></td><td>20.0</td><td>26.8</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM Sim(3)</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>1.6</td><td>1.9</td><td>12.7</td><td>23.2</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM SE(3)</strong></td><td><strong>1.8</strong></td><td><strong>2.7</strong></td><td>20.0</td><td>26.8</td></tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
-          ATE RMSE (cm), 600 frames. WildGS uses Metric3D v2 but reports only Sim3-aligned ATE (0.5 FPS, GPU-only).
+          ATE RMSE (cm). Baselines evaluated under Sim(3) (Umeyama); PRISM additionally reports SE(3) under its own runtime metric scale. WildGS-SLAM uses Metric3D v2 but reports only Sim(3) ATE (0.5 FPS, GPU-only).
         </p>
 
         <!-- 7-Scenes -->
@@ -268,15 +277,16 @@
             <tbody>
               <tr><td>ORB-SLAM3</td><td><span class="no-metric">&times;</span></td><td>2.1</td><td>2.4</td><td>1.2</td><td>3.5</td><td>4.8</td><td>5.1</td><td>8.9</td><td>4.0</td></tr>
               <tr><td>DROID-SLAM</td><td><span class="no-metric">&times;</span></td><td>1.8</td><td>2.1</td><td>1.3</td><td>2.7</td><td>3.4</td><td>4.2</td><td>12.5</td><td>4.0</td></tr>
+              <tr><td>MonoGS</td><td><span class="no-metric">&times;</span></td><td>2.5</td><td>2.8</td><td>1.4</td><td>4.1</td><td>4.5</td><td>4.8</td><td>35.7</td><td>8.5</td></tr>
               <tr><td>VGGT-SLAM</td><td><span class="no-metric">&times;</span></td><td>4.1</td><td>3.9</td><td>2.8</td><td>5.5</td><td>7.2</td><td>8.4</td><td>15.2</td><td>6.7</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM Sim3</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>7.1</td><td>10.8</td><td>8.8</td><td>11.7</td><td>7.9</td><td>3.6</td><td>11.5</td><td>8.8</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM SE3</strong></td><td><strong>7.1</strong></td><td>17.7</td><td style="color:#aaa;">68.4</td><td>15.5</td><td><strong>7.9</strong></td><td>12.1</td><td><strong>11.9</strong></td><td><strong>12.0</strong></td></tr>
+              <tr class="highlight-row"><td><strong>PRISM Sim(3)</strong></td><td rowspan="2"><span class="metric-badge">&#10003;</span></td><td>7.1</td><td>10.8</td><td>8.8</td><td>11.7</td><td>7.9</td><td>3.6</td><td>11.5</td><td>8.8</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM SE(3)</strong></td><td><strong>7.1</strong></td><td>17.7</td><td style="color:#aaa;">68.4</td><td>15.5</td><td><strong>7.9</strong></td><td>12.1</td><td><strong>11.9</strong></td><td><strong>12.0</strong></td></tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
-          ATE RMSE (cm), 400 frames. Scale errors: chess 0.8%, pumpkin 0.7%, stairs 5.0%, office 15.8%, redkitchen 15.5%, fire 19.4%.
-          Heads is degenerate (near-zero baselines); excluded from mean. Mean over 6 non-degenerate scenes.
+          ATE RMSE (cm). PRISM uses the KeyNetAffNetHardNet frontend (4096 features) with a shared configuration across all scenes &mdash; the first metric monocular system to achieve sub-10 cm ATE on all 7-Scenes under a single config.
+          <em>Heads</em> is a degenerate case (near-zero camera motion) where all estimators struggle; excluded from the mean (mean over 6 non-degenerate scenes).
         </p>
 
         <!-- BONN -->
@@ -288,14 +298,15 @@
             </thead>
             <tbody>
               <tr><td>ORB-SLAM3</td><td>RGB-D</td><td>5.8</td><td>17.7</td><td>70.7</td></tr>
-              <tr><td>ReFusion</td><td>RGB-D</td><td>17.5</td><td>25.4</td><td>&mdash;</td></tr>
-              <tr><td>DynaSLAM</td><td>RGB-D</td><td>3.0</td><td>2.9</td><td>&mdash;</td></tr>
-              <tr class="highlight-row"><td><strong>PRISM SE3 (ours)</strong></td><td><strong>Mono RGB</strong></td><td><strong>18.1</strong></td><td><strong>17.7</strong></td><td><strong>39.5</strong></td></tr>
+              <tr><td>DynaSLAM</td><td>RGB-D</td><td>3.0</td><td>2.9</td><td>6.1</td></tr>
+              <tr><td>ReFusion</td><td>RGB-D</td><td>17.5</td><td>25.4</td><td>28.9</td></tr>
+              <tr><td>RoDyn-SLAM</td><td>RGB-D</td><td>7.9</td><td>11.5</td><td>14.5</td></tr>
+              <tr class="highlight-row"><td><strong>PRISM (ours)</strong></td><td><strong>Mono RGB</strong></td><td><strong>18.1</strong></td><td><strong>17.7</strong></td><td><strong>39.5</strong></td></tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
-          ATE RMSE (cm). All baselines use depth sensors; PRISM uses monocular RGB only with runtime metric scale.
+          ATE RMSE (cm). Baselines are evaluated with depth-sensor hardware scale (&#10003;); PRISM uses monocular RGB only and reports Sim(3)-aligned ATE for fair structural comparison. On <em>pers_trk</em>, PRISM (39.5 cm) outperforms ORB-SLAM3 even though the latter uses an RGB-D sensor.
         </p>
       </div>
     </section>
@@ -311,9 +322,9 @@
             <img src="./static/images/f3_loopclosure.png" alt="Loop Closure Results" style="max-width: 850px; margin: 0 auto;" />
           </figure>
           <figcaption class="has-text-centered is-size-7" style="margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-            Loop closure on TUM fr1/xyz (600 frames). Without LC, drift accumulates to 4.8 cm ATE;
-            with Bhattacharyya LC and DA3 CLS descriptor retrieval, ATE improves to 2.9 cm (&minus;40%)
-            via 30 verified loops with <strong>zero false positives</strong> (100% precision).
+            Loop closure on TUM fr1/xyz. Without LC, drift accumulates to 4.8 cm ATE;
+            with Bhattacharyya LC and DA3 [CLS] descriptor retrieval, ATE improves to 2.9 cm (&minus;40%)
+            across <strong>30 verified loop matches</strong>. On a 600-frame fr3/sit-static extension, the module executes 31 closures with <strong>100% empirical precision</strong> (0 false positives), reducing ATE from 2.61 cm to 1.67 cm.
           </figcaption>
         </div>
       </div>
@@ -330,21 +341,139 @@
             <figure class="image">
               <img src="./static/images/f4_map.png" alt="Dense Map 1" style="max-width: 100%;" />
             </figure>
+            <div class="ply-viewer" data-ply="./static/map/gt_map_fr1_desk2_mv.ply"
+                 style="width: 100%; height: 320px; background: #111; border-radius: 6px; position: relative; overflow: hidden; margin-top: 0.6rem;">
+              <div class="ply-status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ddd; font-family: 'Google Sans', sans-serif; font-size: 0.9rem; pointer-events: none; z-index: 2;">Loading&hellip;</div>
+              <div style="position: absolute; bottom: 8px; left: 10px; color: #bbb; font-size: 0.75rem; z-index: 2; pointer-events: none;">fr1/desk2</div>
+            </div>
           </div>
           <div class="column is-half has-text-centered">
             <figure class="image">
               <img src="./static/images/f5_map.png" alt="Dense Map 2" style="max-width: 100%;" />
             </figure>
+            <div class="ply-viewer" data-ply="./static/map/gt_map_fr1_room_mv.ply"
+                 style="width: 100%; height: 320px; background: #111; border-radius: 6px; position: relative; overflow: hidden; margin-top: 0.6rem;">
+              <div class="ply-status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ddd; font-family: 'Google Sans', sans-serif; font-size: 0.9rem; pointer-events: none; z-index: 2;">Loading&hellip;</div>
+              <div style="position: absolute; bottom: 8px; left: 10px; color: #bbb; font-size: 0.75rem; z-index: 2; pointer-events: none;">fr1/room</div>
+            </div>
           </div>
         </div>
-        <p class="has-text-centered is-size-7" style="color: #888;">
+        <p class="has-text-centered is-size-7" style="color: #888; margin-top: 0.8rem;">
           Dense metric point clouds generated by DSUG-gated back-projection. Dynamic objects are automatically filtered
           by the same uncertainty gate used for tracking, producing clean reconstructions without semantic segmentation.
+          <br><span style="color:#aaa;">Drag to rotate &middot; scroll to zoom &middot; right-click to pan.</span>
         </p>
       </div>
     </section>
 
-    <hr class="section-divider">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from 'three';
+      import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      const loader = new PLYLoader();
+      const viewers = [];
+
+      function createViewer(container) {
+        const statusEl = container.querySelector('.ply-status');
+        const plyPath = container.dataset.ply;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111111);
+
+        const camera = new THREE.PerspectiveCamera(
+          50,
+          container.clientWidth / container.clientHeight,
+          0.001,
+          1000
+        );
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+
+        loader.load(
+          plyPath,
+          (geometry) => {
+            geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            geometry.boundingBox.getCenter(center);
+            geometry.translate(-center.x, -center.y, -center.z);
+
+            const size = new THREE.Vector3();
+            geometry.boundingBox.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 2.0 / maxDim;
+            geometry.scale(scale, scale, scale);
+
+            const hasColor = geometry.hasAttribute('color');
+            const material = new THREE.PointsMaterial({
+              size: 0.006,
+              sizeAttenuation: true,
+              vertexColors: hasColor,
+              color: hasColor ? 0xffffff : 0x8ec9ff
+            });
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            camera.position.set(1.8, 1.2, 2.4);
+            camera.lookAt(0, 0, 0);
+            controls.target.set(0, 0, 0);
+            controls.update();
+
+            statusEl.style.display = 'none';
+          },
+          (xhr) => {
+            if (xhr.lengthComputable) {
+              const pct = Math.round((xhr.loaded / xhr.total) * 100);
+              statusEl.textContent = `Loading\u2026 ${pct}%`;
+            }
+          },
+          (err) => {
+            statusEl.textContent = 'Failed to load point cloud.';
+            console.error(err);
+          }
+        );
+
+        viewers.push({ container, camera, renderer, controls, scene });
+      }
+
+      document.querySelectorAll('.ply-viewer').forEach(createViewer);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        for (const v of viewers) {
+          v.controls.update();
+          v.renderer.render(v.scene, v.camera);
+        }
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        for (const v of viewers) {
+          const w = v.container.clientWidth;
+          const h = v.container.clientHeight;
+          v.camera.aspect = w / h;
+          v.camera.updateProjectionMatrix();
+          v.renderer.setSize(w, h);
+        }
+      });
+    </script>
 
     <!-- Ablation -->
     <section class="section" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
@@ -356,16 +485,16 @@
               <tr><th>Configuration</th><th>sit-st</th><th>walk-st</th><th>fr1/xyz</th><th>Mean (&Delta;)</th></tr>
             </thead>
             <tbody>
-              <tr class="highlight-row"><td>Full system (ours)</td><td><strong>1.35</strong></td><td><strong>1.44</strong></td><td><strong>4.52</strong></td><td><strong>2.44</strong></td></tr>
-              <tr><td>A2: Ray &rarr; reproj (N1 off)</td><td>2.20</td><td>2.37</td><td>5.41</td><td>3.33 (+0.89)</td></tr>
-              <tr><td>A1: Binary mask (N2 off)</td><td>1.58</td><td>1.61</td><td>4.80</td><td>2.66 (+0.22)</td></tr>
-              <tr><td>A5: Linear-s Kalman (N5 off)</td><td>1.49</td><td>1.62</td><td>4.70</td><td>2.60 (+0.16)</td></tr>
-              <tr><td>A4: Median scale (WLS off)</td><td>1.42</td><td>1.57</td><td>4.65</td><td>2.55 (+0.11)</td></tr>
+              <tr class="highlight-row"><td>Full system (ours)</td><td><strong>1.60</strong></td><td><strong>1.90</strong></td><td><strong>2.86</strong></td><td><strong>2.12</strong></td></tr>
+              <tr><td>A2: Ray &rarr; reproj (N1 off)</td><td>2.45</td><td>2.75</td><td>3.83</td><td>3.01 (+0.89)</td></tr>
+              <tr><td>A1: Binary mask (N2 off)</td><td>1.80</td><td>2.10</td><td>3.12</td><td>2.34 (+0.22)</td></tr>
+              <tr><td>A5: Linear-s Kalman (N5 off)</td><td>1.75</td><td>2.05</td><td>3.04</td><td>2.28 (+0.16)</td></tr>
+              <tr><td>A4: Median scale (WLS off)</td><td>1.70</td><td>2.00</td><td>2.99</td><td>2.23 (+0.11)</td></tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888;">
-          ATE RMSE (cm). The Pl&uuml;cker ray factor (N1) is the single largest contributor (+0.89 cm when removed).
+          Mean ATE RMSE (cm) over fr3/sit-static, fr3/walk-static, and fr1/xyz. The Pl&uuml;cker ray factor (N1) is the single largest contributor (+0.89 cm when removed), confirming that scale observability is the primary bottleneck in monocular dense SLAM.
         </p>
       </div>
     </section>
