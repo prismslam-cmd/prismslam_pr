@@ -150,18 +150,19 @@
                 integrating these deterministic predictions ignores predictive uncertainty and frame-to-frame scale
                 inconsistencies. We propose <strong>PRISM-SLAM</strong>, a real-time framework that rigorously integrates
                 VFM priors into a structured Bayesian factor graph to achieve scale-aware, metric-consistent localization
-                and mapping. Specifically, we introduce a <em>Pl&uuml;cker Ray-Distance Factor</em> to anchor monocular
-                observations within a globally consistent metric coordinate system, mathematically resolving scale drift by
-                making the metric scale Fisher-identifiable. To handle environmental dynamics, we derive an epistemic
-                uncertainty proxy from temporal depth consistency and formulate a
+                and mapping.                 Specifically, we introduce a <em>Pl&uuml;cker Ray-Distance Factor</em> to anchor monocular observations
+                in absolute space within a globally consistent metric coordinate system, mathematically resolving scale
+                drift by making the metric scale Fisher-identifiable. To handle environmental dynamics, we derive an
+                epistemic uncertainty proxy from temporal depth consistency and formulate a
                 <em>Dynamic Scene Uncertainty Gating (DSUG)</em> mechanism. This soft-gating approach probabilistically
-                down-weights dynamic distractors while bypassing the heavy overhead associated with traditional semantic
-                segmentation masks. By employing a multi-process architecture that asynchronously processes VFM
-                inference and geometric tracking, PRISM-SLAM provides verified metric output at 30 FPS using solely RGB
-                input, bridging the gap between foundation models and real-world robotic applications. Evaluated on the TUM
-                RGB-D and 7-Scenes benchmarks, PRISM-SLAM achieves a metric SE(3) Absolute Trajectory Error (ATE) nearly
-                identical to its oracle-aligned Sim(3) error, demonstrating deployment-ready metric trajectories without
-                post-hoc oracle alignment.
+                down-weights dynamic distractors without incurring the heavy computational overhead associated with
+                traditional semantic segmentation masks. By employing a multi-process architecture that asynchronously
+                processes VFM inference and geometric tracking, PRISM-SLAM provides verified metric output at 30 FPS using
+                solely RGB input, bridging the gap between foundation models and real-world robotic applications. Evaluated
+                on the TUM RGB-D and 7-Scenes benchmarks, PRISM-SLAM achieves a metric SE(3) Absolute Trajectory Error (ATE)
+                nearly identical to its oracle-aligned Sim(3) error. This demonstrates that our system can produce
+                deployment-ready metric trajectories by delivering robust metric SLAM solutions without any post-hoc scale
+                correction.
               </p>
             </div>
           </div>
@@ -220,9 +221,10 @@
           <p>
             PRISM-SLAM uses a four-process architecture: (1) a C++ ORB tracker on CPU at &sim;30 FPS, (2) a DA3-Large
             GPU worker that processes keyframes asynchronously, (3) a Python metric optimizer with log-domain WLS scale
-            estimation and Kalman filtering, and (4) optional DSUG-gated dense map reconstruction. The tracker submits
-            keyframes to DA3; fused metric depth and ray constraints feed back into the frontend while DSUG uncertainty
-            gates both optimization and dense back-projection.
+            estimation and Kalman filtering, and (4) optional DSUG-gated dense reconstruction. Online, the tracker streams
+            keyframes to DA3 and fuses metric depth and ray constraints back into the frontend with DSUG-gated
+            optimization. For final maps, optimized poses are batched into DA3&rsquo;s multi-view module (paper Sec.&nbsp;3.7)
+            before DSUG-filtered back-projection.
           </p>
         </div>
       </div>
@@ -306,8 +308,8 @@
           <p>
             Recent methods incorporate metric depth priors but still rely on post-hoc Sim(3) trajectory alignment. In
             evaluation, Sim(3) rescales the trajectory with a ground-truth oracle, whereas SE(3) measures rigid motion
-            without any scale correction.             <strong>PRISM-SLAM</strong> is the first monocular system to achieve true metric tracking evaluated under strict
-            SE(3) alignment.
+            without any scale correction. <strong>PRISM-SLAM</strong> is the first to achieve true metric tracking evaluated
+            under strict SE(3) alignment.
           </p>
         </div>
         <div style="overflow-x: auto">
@@ -638,7 +640,9 @@
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
           ATE RMSE (cm). Baselines evaluated under Sim(3) (Umeyama); PRISM additionally reports SE(3) under its own
-          runtime metric scale. WildGS-SLAM uses Metric3D v2 but reports only Sim(3) ATE (0.5 FPS, GPU-only).
+          runtime metric scale. The same strict metric fidelity extends to fr3 (paper Sec.&nbsp;4.2): e.g. sit-static Sim(3)
+          1.6&nbsp;cm vs. SE(3) 1.8&nbsp;cm. WildGS-SLAM uses Metric3D v2 but reports only Sim(3) ATE (&sim;0.5 FPS,
+          GPU-only).
         </p>
 
         <!-- 7-Scenes -->
@@ -784,23 +788,34 @@
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
-          ATE RMSE (cm). KeyNet frontend with 4096 features (<em>N<sub>f</sub></em> = 4096 in the paper). Mean Sim(3) ATE
-          is <strong>8.8 cm</strong> across all seven scenes. <em>Heads</em> is dominated by extreme rotation and weak
+          ATE RMSE (cm). KeyNet frontend with 4096 features (<em>N<sub>f</sub></em> = 4096; paper Table&nbsp;7). Mean Sim(3)
+          ATE is <strong>8.8 cm</strong> across all seven scenes. <em>Heads</em> is dominated by extreme rotation and weak
           metric observability (large SE(3) gap); the <strong>Mean</strong> column reports Sim(3)/SE(3) averaged over the
           six non-degenerate scenes, matching the project table convention.
         </p>
 
-        <!-- BONN -->
-        <h4 class="title is-5" style="margin-top: 2rem">BONN Dynamic &mdash; Monocular RGB vs. RGB-D Baselines</h4>
+        <!-- BONN (Table 4) -->
+        <h4 class="title is-5" style="margin-top: 2rem">BONN Dynamic &mdash; Monocular RGB vs. RGB-D (Sim(3) / SE(3))</h4>
         <div style="overflow-x: auto">
-          <table class="results-table" style="max-width: 650px; margin: 0 auto">
+          <table class="results-table">
             <thead>
               <tr>
-                <th>Method</th>
-                <th>Sensor</th>
-                <th>balloon</th>
-                <th>balloon2</th>
-                <th>pers trk</th>
+                <th rowspan="2">Method</th>
+                <th rowspan="2">Sensor</th>
+                <th colspan="2">balloon</th>
+                <th colspan="2">balloon2</th>
+                <th colspan="2">pers trk</th>
+                <th colspan="2">balloon trk</th>
+              </tr>
+              <tr>
+                <th>Sim(3)</th>
+                <th>SE(3)</th>
+                <th>Sim(3)</th>
+                <th>SE(3)</th>
+                <th>Sim(3)</th>
+                <th>SE(3)</th>
+                <th>Sim(3)</th>
+                <th>SE(3)</th>
               </tr>
             </thead>
             <tbody>
@@ -808,45 +823,109 @@
                 <td>ORB-SLAM3</td>
                 <td>RGB-D</td>
                 <td>5.8</td>
+                <td>&mdash;</td>
                 <td>17.7</td>
+                <td>&mdash;</td>
                 <td>70.7</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
               </tr>
               <tr>
                 <td>DynaSLAM</td>
                 <td>RGB-D</td>
                 <td>3.0</td>
+                <td>&mdash;</td>
                 <td>2.9</td>
+                <td>&mdash;</td>
                 <td>6.1</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
               </tr>
               <tr>
                 <td>ReFusion</td>
                 <td>RGB-D</td>
                 <td>17.5</td>
+                <td>&mdash;</td>
                 <td>25.4</td>
+                <td>&mdash;</td>
                 <td>28.9</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
               </tr>
               <tr>
                 <td>RoDyn-SLAM</td>
                 <td>RGB-D</td>
                 <td>7.9</td>
+                <td>&mdash;</td>
                 <td>11.5</td>
+                <td>&mdash;</td>
                 <td>14.5</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
               </tr>
               <tr class="highlight-row">
                 <td><strong>PRISM (ours)</strong></td>
                 <td><strong>Mono RGB</strong></td>
+                <td><strong>9.8</strong></td>
                 <td><strong>18.1</strong></td>
+                <td><strong>14.0</strong></td>
                 <td><strong>17.7</strong></td>
+                <td><strong>36.7</strong></td>
                 <td><strong>39.5</strong></td>
+                <td><strong>7.8</strong></td>
+                <td><strong>9.1</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
-          ATE RMSE (cm). RGB-D baselines use hardware depth scale; PRISM uses monocular RGB only and reports
-          Sim(3)-aligned ATE for fair comparison to RGB-D methods. On <em>pers trk</em>, PRISM (39.5 cm) substantially
-          beats ORB-SLAM3 (70.7 cm) despite the latter&rsquo;s RGB-D input; DSUG ablations report &sim;47&ndash;59%
-          error reductions vs. an ungated baseline on these sequences.
+          ATE RMSE (cm). RGB-D baselines use active hardware depth (standard Sim(3) reporting); dashes mark sequences not
+          evaluated in the paper table. PRISM reports both alignments: on balloon2 and pers trk, SE(3) (17.7 / 39.5 cm)
+          closely tracks Sim(3) (14.0 / 36.7 cm), evidencing consistent runtime metric scale under heavy dynamics. See the
+          paper (Table 6) for DSUG-only ablations on these splits.
+        </p>
+
+        <!-- BONN DSUG ablation (Table 6) -->
+        <h4 class="title is-5" style="margin-top: 2rem">BONN &mdash; DSUG Ablation (SE(3) ATE, cm)</h4>
+        <div style="overflow-x: auto">
+          <table class="results-table" style="max-width: 720px; margin: 0 auto">
+            <thead>
+              <tr>
+                <th>Configuration</th>
+                <th>balloon</th>
+                <th>balloon2</th>
+                <th>pers trk</th>
+                <th>balloon trk</th>
+                <th>Mean (&Delta;)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row">
+                <td>Full system (Ours)</td>
+                <td><strong>18.1</strong></td>
+                <td><strong>17.7</strong></td>
+                <td><strong>39.5</strong></td>
+                <td><strong>9.1</strong></td>
+                <td><strong>21.1</strong></td>
+              </tr>
+              <tr>
+                <td>w/o DSUG</td>
+                <td>21.3</td>
+                <td>24.5</td>
+                <td>51.1</td>
+                <td>15.7</td>
+                <td>28.2 (+7.1)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
+          Strict SE(3) alignment. Disabling DSUG spikes the mean error by +7.1 cm; on pers trk, ATE rises from 39.5 cm to
+          51.1 cm (paper Table 6).
         </p>
 
         <!-- KITTI -->
@@ -885,8 +964,8 @@
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
-          Sequence 03. Stereo row follows the paper&rsquo;s Table 8 notation (&#8224;): two-camera input to bypass monocular
-          scale ambiguity.
+          Sequence 03. Stereo row follows the paper&rsquo;s Table 9 (&dagger;): two-camera input to bypass monocular scale
+          ambiguity.
         </p>
       </div>
     </section>
@@ -910,8 +989,8 @@
             style="margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto"
           >
             Impact of ViT-driven loop closure on TUM fr1/xyz. Without LC, drift grows to 4.8 cm ATE RMSE; activating
-            loop closure (2048-D [CLS] from DA3 with geometric verification) reduces ATE to 2.9 cm (&sim;40% gain) across
-            <strong>30 verified loop matches</strong> with high RANSAC inlier confidence. On a 600-frame fr3/sit-static
+            loop closure (2048-D [CLS] from DA3&rsquo;s ViT (Yang et al., 2024) with geometric verification) reduces ATE to
+            2.9 cm (&sim;40% gain) across <strong>30 verified loop matches</strong> with high RANSAC inlier confidence. On a 600-frame fr3/sit-static
             extension, the system runs 31 closures at <strong>100% empirical precision</strong> (0 false positives),
             lowering ATE from 2.61 cm to 1.67 cm and increasing valid tracked frames from 401 to 480.
           </figcaption>
@@ -1024,9 +1103,11 @@
           </div>
         </div>
         <p class="has-text-centered is-size-7" style="color: #888; margin-top: 0.8rem">
-          Offline DSUG-gated back-projection from DA3 multi-view depth (GT-pose TSDF fusion in the paper). On
-          fr1/desk2, DA3-MV cuts Chamfer distance to 17.0&nbsp;cm vs. 23.5&nbsp;cm for a filtered single-view baseline and
-          raises F@5&nbsp;cm to 31.7% (vs. 20.7%), tightening geometry toward Kinect reference maps.
+          Offline pipeline (paper Sec.&nbsp;3.7, Table&nbsp;10): batches of globally optimized poses feed DA3 multi-view
+          inference (<em>N</em> = 5, GT extrinsics in the evaluation), then DSUG-filtered depth is fused in a TSDF (DA3-MV
+          uses 2&nbsp;cm voxels vs. 1&nbsp;cm for the filtered single-view baseline). On fr1/desk2, DA3-MV cuts Chamfer
+          distance to 17.0&nbsp;cm vs. 23.5&nbsp;cm and raises F@5&nbsp;cm to 31.7% (vs. 20.7%) relative to the filtered
+          baseline.
           <br /><span style="color: #aaa">Drag to rotate &middot; scroll to zoom &middot; right-click to pan.</span>
         </p>
       </div>
@@ -1191,10 +1272,12 @@
           </table>
         </div>
         <p class="is-size-7 has-text-centered" style="margin-top: 0.3rem; color: #888">
-          Mean ATE RMSE (cm) over fr3/sit-static, fr3/walk-static, and fr1/xyz; full system mean 2.12 cm. Removing the
-          Pl&uuml;cker ray-distance factor (+0.89 cm) hurts most, confirming ray-grounded scale constraints as the main
-          remedy for monocular scale drift. DSUG soft gating (+0.22 vs. a binary-mask baseline) preserves stable
-          gradients; log-domain Kalman (+0.16) and IRLS WLS (+0.11) further tighten asynchronous scale fusion.
+          Paper Table&nbsp;5: mean ATE (cm) as SE(3) over fr3/sit-static, fr3/walk-static, and fr1/xyz; full system
+          2.12&nbsp;cm. Removing the Pl&uuml;cker ray-distance factor (+0.89&nbsp;cm) is the dominant failure mode, consistent
+          with cross-view ray constraints resolving the scale null-space. Disabling DSUG adds +0.22&nbsp;cm on these mostly
+          static splits (its impact is much larger on BONN dynamics; Table&nbsp;6). Log-domain Kalman (+0.16&nbsp;cm) and
+          confidence-weighted WLS vs. a simple unweighted variant (+0.11&nbsp;cm) further stabilize asynchronous scale
+          fusion.
         </p>
       </div>
     </section>
